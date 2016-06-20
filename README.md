@@ -1,90 +1,61 @@
-Yii 2 Basic Project Template
+Тестовое задание для соискателей на должность PHP-developer
 ============================
 
-Yii 2 Basic Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-rapidly creating small projects.
+Yii 2 Basic Project Template в качестве основы для приложения по отслеживанию событий в моделях.
+Стартовая страница выдаёт только приветствие.
+Страница Signup позволяет создать пользователя с любой ролью (админ, пользователь).
+Затем необходимо залогиниться.
 
-The template contains the basic features including user login/logout and a contact page.
-It includes all commonly used configurations that would allow you to focus on adding new
-features to your application.
+Пользователю доступна только страница **Notifications** (уведомления) - ListView из Bootstrap-alert-ов с пагинацией
+(10 элементов на страницу), а также кнопкой прочитано (х). CRUD сгенерирован автоматически, но кроме index не используется,
+сортировка по dismissed и дате уведомлений.
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii2-app-basic/v/stable.png)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![Total Downloads](https://poser.pugx.org/yiisoft/yii2-app-basic/downloads.png)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-basic.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-basic)
+Админу доступно еще 2 раздела:
+
+**Articles** (статьи) - тут всё довольно тривиально, CRUD статей.
+
+**Triggers** (триггеры) - здесь задаем отслеживаемую модель, выбираем из доступных в выбранной модели событие, От кого, Кому
+(Здесь немного негибко получилось, ибо помимо отправки уведомлений конкретному пользователю или всем пользователям,
+нужна отправка инициатору события, т.к. заранее выбрать пользователя, которому нужно отправить уведомление при регистрации
+невозможно), Заголовок и Текст сообщения (Доступна подстановка параметров, поддерживаемых в модели), Тип уведомления
+(мултиселект). CRUD
+
+Отслеживание событий осуществляется с помощью Поведения models/Triggered,
+которое нужно подключить во всех интересующих нас моделях (подключено в 
+User и в Articles)
+
+[Автор Салтановский Д.С.](https://voronezh.hh.ru/resume/fdd3cd7eff032036750039ed1f553154443367)
+
 
 DIRECTORY STRUCTURE
 -------------------
 
       assets/             contains assets definition
-      commands/           contains console commands (controllers)
-      config/             contains application configurations
-      controllers/        contains Web controller classes
+      config/             здесь в файле **db.php** не забудьте прописать свои настройки БД
+      controllers/        здесь контроллеры
       mail/               contains view files for e-mails
-      models/             contains model classes
+      models/             здесь все модели и поведение Triggered
       runtime/            contains files generated during runtime
-      tests/              contains various tests for the basic application
+      tests/              тесты не писал, уже и без того слишком долго выполняю это задание
       vendor/             contains dependent 3rd-party packages
       views/              contains view files for the Web application
       web/                contains the entry script and Web resources
 
 
 
-REQUIREMENTS
+ТРЕБОВАНИЯ
 ------------
 
-The minimum requirement by this project template that your Web server supports PHP 5.4.0.
+Функция получения списка доступных в модели событий использует array_filter с параметром, добавленным в PHP 5.6.
 
 
-INSTALLATION
-------------
 
-### Install from an Archive File
+НАСТРОЙКА
+---------
 
-Extract the archive file downloaded from [yiiframework.com](http://www.yiiframework.com/download/) to
-a directory named `basic` that is directly under the Web root.
+### БД
 
-Set cookie validation key in `config/web.php` file to some random secret string:
-
-```php
-'request' => [
-    // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-    'cookieValidationKey' => '<secret random string goes here>',
-],
-```
-
-You can then access the application through the following URL:
-
-~~~
-http://localhost/basic/web/
-~~~
-
-
-### Install via Composer
-
-If you do not have [Composer](http://getcomposer.org/), you may install it by following the instructions
-at [getcomposer.org](http://getcomposer.org/doc/00-intro.md#installation-nix).
-
-You can then install this project template using the following command:
-
-~~~
-php composer.phar global require "fxp/composer-asset-plugin:~1.1.1"
-php composer.phar create-project --prefer-dist --stability=dev yiisoft/yii2-app-basic basic
-~~~
-
-Now you should be able to access the application through the following URL, assuming `basic` is the directory
-directly under the Web root.
-
-~~~
-http://localhost/basic/web/
-~~~
-
-
-CONFIGURATION
--------------
-
-### Database
-
-Edit the file `config/db.php` with real data, for example:
+Внесите в `config/db.php` реальные данные, например:
 
 ```php
 return [
@@ -96,7 +67,19 @@ return [
 ];
 ```
 
+### Миграции создадут необходимые таблицы
+
+### Подключение системы отслеживания событий к моделям:
+1. В /models/Model.php дописать функции getEvents и behaviors
+2. В /views/triggers/_form.php в поле 'model' дописать имя новой модели
+
+### Добавление новых типов уведомлений:
+1. В /models/Triggered.php в функции triggerMe добавить обработчик отправки
+нового типа уведомления
+2. В /views/triggers/_form.php в поле 'type' дописать имя нового типа
+
+
 **NOTES:**
-- Yii won't create the database for you, this has to be done manually before you can access it.
-- Check and edit the other files in the `config/` directory to customize your application as required.
-- Refer to the README in the `tests` directory for information specific to basic application tests.
+- Сложно сказать, сколько времени ушло на выполнение задания, при том, 
+что с Yii2 столкнулся впервые, и большая часть времени затрачена на 
+изучение мануалов. Приблизительно 2-3 дня на написание кода.
