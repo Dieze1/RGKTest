@@ -69,6 +69,23 @@ return [
 
 ### Миграции создадут необходимые таблицы
 
+### SwiftMailer
+
+1. В /config/web.php дописать настройки Транспорта, например:
+```php
+'mailer' => [
+        'class' => 'yii\swiftmailer\Mailer',
+        'transport' => [
+            'class' => 'Swift_SmtpTransport',
+            'host' => 'localhost',
+            'username' => 'username',
+            'password' => 'password',
+            'port' => '587',
+            'encryption' => 'tls',
+        ],
+    ],
+```
+
 ### Подключение системы отслеживания событий к моделям:
 1. В /models/Model.php дописать функции getEvents и behaviors
 2. В /views/triggers/_form.php в поле 'model' дописать имя новой модели
