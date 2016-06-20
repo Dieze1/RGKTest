@@ -33,7 +33,8 @@ class Triggered extends Behavior
     public function triggerMe($event )
     {
         //сначала выбираем из БД триггеры для сработавшего события и модели
-        foreach (Triggers::find()->where(['model'=>$this->owner->className()])->where(['eventCode'=>$event->name])->each() as $trigger){
+        $className = substr($this->owner->className(), strripos( $this->owner->className(), '\\')+1);
+        foreach (Triggers::find()->where(['model'=>$className, 'eventCode'=>$event->name])->each() as $trigger){
             //типы уведомлений в триггере - в массив
             $types = explode(',', $trigger->type);
             //разбираемся с разными вариантами адресатов уведомлений

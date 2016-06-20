@@ -79,7 +79,16 @@ return [
 2. В /views/triggers/_form.php в поле 'type' дописать имя нового типа
 
 
-**NOTES:**
+**Заметки:**
 - Сложно сказать, сколько времени ушло на выполнение задания, при том, 
 что с Yii2 столкнулся впервые, и большая часть времени затрачена на 
 изучение мануалов. Приблизительно 2-3 дня на написание кода.
+- При проблемах с русским текстом в MySQL выполнить:
+```SQL
+SET collation_connection = 'utf8_general_ci';
+ALTER DATABASE yii2basic CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER TABLE yii2basic.articles CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER TABLE yii2basic.notifications CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER TABLE yii2basic.triggers CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER TABLE yii2basic.user CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
