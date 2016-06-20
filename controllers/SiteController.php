@@ -1,39 +1,21 @@
 <?php
-
 namespace app\controllers;
-
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
-
+use app\models\Signup;
+use app\models\Login;
 class SiteController extends Controller
 {
-    public function behaviors()
+    /**Рендерит главную страницу
+     * @return string
+     */
+    public function actionIndex()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
+        return $this->render('index');
     }
-
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         return [
@@ -47,48 +29,57 @@ class SiteController extends Controller
         ];
     }
 
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
-
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-        return $this->render('login', [
-            'model' => $model,
-        ]);
-    }
-
+    /**разлогинивает и редиректит на страницу авторизации
+     * @return \yii\web\Response
+     */
     public function actionLogout()
     {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
-    }
-
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
+        if(!Yii::$app->user->isGuest)
+        {
+            Yii::$app->user->logout();
+            return $this->redirect(['login']);
         }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
+        return $this->redirect(['login']);
     }
 
-    public function actionAbout()
+    /**
+     * проводит на форму регистрации и регистрирует нового пользователя
+     * @return string|\yii\web\Response
+     */
+    public function actionSignup()
     {
-        return $this->render('about');
+        $model = new Signup();
+        if(isset($_POST['Signup']))
+        {
+            $model->attributes = Yii::$app->request->post('Signup');
+            if($model->validate() && $model->signup())
+            {
+                return $this->redirect(['index']);
+            }
+        }
+        return $this->render('signup',['model'=>$model]);
+    }
+    
+    /**
+     * Проверяет существует ли пользователь, вносит пользователя в систему(в сессию)
+     * @return string|\yii\web\Response
+     */
+    public function actionLogin()
+    {
+        if(!Yii::$app->user->isGuest)
+        {
+            return $this->goHome();
+        }
+        $login_model = new Login();
+        if( Yii::$app->request->post('Login'))
+        {
+            $login_model->attributes = Yii::$app->request->post('Login');
+            if($login_model->validate())
+            {
+                Yii::$app->user->login($login_model->getUser());
+                return $this->goHome();
+            }
+        }
+        return $this->render('login',['login_model'=>$login_model]);
     }
 }

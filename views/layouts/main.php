@@ -27,7 +27,7 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'My Company',
+        'brandLabel' => 'RGKTestTask',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -36,16 +36,17 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
+            ((isset(Yii::$app->user->identity))&&(Yii::$app->user->identity->role>0))?
+                (['label' => 'Articles', 'url' => ['/articles']]):(''),
+            Yii::$app->user->isGuest ? (''):(['label' => 'Notifications', 'url' => ['/notifications']]),
+            ((isset(Yii::$app->user->identity))&&(Yii::$app->user->identity->role>0))?
+                (['label' => 'Triggers', 'url' => ['/triggers']]):(''),
+            Yii::$app->user->isGuest ? (['label' => 'SignUp', 'url' => ['/site/signup']]):(''),
+            Yii::$app->user->isGuest ? (['label' => 'Login', 'url' => ['/site/login']]) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post', ['class' => 'navbar-form'])
                 . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
+                    'Logout (' . Yii::$app->user->identity->name . ')',
                     ['class' => 'btn btn-link']
                 )
                 . Html::endForm()
